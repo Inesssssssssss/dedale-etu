@@ -54,7 +54,7 @@ public class ExploCoopBehaviour extends SimpleBehaviour {
  * @param myMap known map of the world the agent is living in
  * @param agentNames name of the agents to share the map with
  */
-	public ExploCoopBehaviour(final AbstractDedaleAgent myagent, MapRepresentation myMap,List<String> agentNames) {
+	public ExploCoopBehaviour(final AbstractDedaleAgent myagent, MapRepresentation myMap, List<String> agentNames) {
 		super(myagent);
 		this.myMap=myMap;
 		this.list_agentNames=agentNames;
@@ -67,7 +67,7 @@ public class ExploCoopBehaviour extends SimpleBehaviour {
 
 		if(this.myMap==null) {
 			this.myMap= new MapRepresentation();
-			this.myAgent.addBehaviour(new ShareMapBehaviour(this.myAgent,500,this.myMap,list_agentNames));
+			this.myAgent.addBehaviour(new ShareMapBehaviour(this.myAgent, 500, this.myMap,list_agentNames));
 		}
 
 		//0) Retrieve the current position
@@ -81,7 +81,7 @@ public class ExploCoopBehaviour extends SimpleBehaviour {
 			 * Just added here to let you see what the agent is doing, otherwise he will be too quick
 			 */
 			try {
-				this.myAgent.doWait(1000);
+				this.myAgent.doWait(500);
 			} catch (Exception e) {
 				e.printStackTrace();
 			}

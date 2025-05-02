@@ -8,6 +8,7 @@ import java.util.List;
 import java.util.Optional;
 import java.util.Set;
 import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 import org.graphstream.algorithm.Dijkstra;
 import org.graphstream.graph.Edge;
@@ -92,6 +93,7 @@ public class MapRepresentation implements Serializable {
 		n.clearAttributes();
 		n.setAttribute("ui.class", mapAttribute.toString());
 		n.setAttribute("ui.label",id);
+		//n.setAttribute(id, null);
 	}
 
 	/**
@@ -170,6 +172,23 @@ public class MapRepresentation implements Serializable {
 		//3) Compute shorterPath
 
 		return getShortestPath(myPosition,closest.get().getLeft());
+	}
+	
+	public List<String> getShortestPathToSecClosestOpenNode(String myPosition,int i) {
+		//1) Get all openNodes
+		List<String> opennodes=getOpenNodes();
+
+		//2) select the closest one
+		List<Couple<String,Integer>> lc=
+				opennodes.stream()
+				.map(on -> (getShortestPath(myPosition,on)!=null)? new Couple<String, Integer>(on,getShortestPath(myPosition,on).size()): new Couple<String, Integer>(on,Integer.MAX_VALUE))//some nodes my be unreachable if the agents do not share at least one common node.
+				.collect(Collectors.toList());
+
+		Stream<Couple<String, Integer>> sec_closest_stream=lc.stream().skip(i);
+		Optional<Couple<String,Integer>> sec_closest=sec_closest_stream.min(Comparator.comparing(Couple::getRight));
+		//3) Compute shorterPath
+
+		return getShortestPath(myPosition,sec_closest.get().getLeft());
 	}
 
 
@@ -314,6 +333,49 @@ public class MapRepresentation implements Serializable {
 				.findAny()).isPresent();
 	}
 
+	// ajout reset du graphe
+	public void resetGraph() {
+		//this.closeGui();
+		String new_defaultNodeStyle= "node {"+"fill-color: red;"+" size-mode:fit;text-alignment:under; text-size:14;text-color:white;text-background-mode:rounded-box;text-background-color:black;}";
+		String new_nodeStyle_open = "node.agent {"+"fill-color: red;"+"}";
+		String new_nodeStyle_agent = "node.open {"+"fill-color: red;"+"}";
+		String new_nodeStyle=new_defaultNodeStyle+new_nodeStyle_agent+new_nodeStyle_open;
+		System.setProperty("org.graphstream.ui", "javafx");
+		this.g.clear();
+		this.g.setAttribute("ui.stylesheet",new_nodeStyle);
+		
+		
+		this.nbEdges=0;
+		/*
+		Platform.runLater(() -> {
+			openGui();
+		});*/
+		
+		
+	}
+	
+	public List<String> getAlternativePath(String myPosition, String blockedNode) {
+	    Node blocked = this.g.getNode(blockedNode);
+	    if (blocked == null) return null; // Vérification si le nœud bloqué existe
+
+	    // Suppression temporaire du nœud bloqué du graphe
+	    Set<Edge> edgesToRestore = blocked.edges().collect(Collectors.toSet());
+	    this.g.removeNode(blockedNode);
+
+	    List<String> alternativePath = getShortestPathToClosestOpenNode(myPosition);
+
+	    // Restauration du nœud bloqué et de ses arêtes
+	    this.g.addNode(blockedNode).setAttribute("ui.class", MapAttribute.open.toString());
+	    for (Edge e : edgesToRestore) {
+	        this.g.addEdge(e.getId(), e.getNode0().getId(), e.getNode1().getId());
+	    }
+
+	    return alternativePath;
+	}
+
+
+
+	
 
 
 

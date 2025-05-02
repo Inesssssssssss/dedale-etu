@@ -134,7 +134,7 @@
 		</dependency>
 
 		<!-- Junit -->
-		<dependency>
+	    <dependency>
 			<groupId>junit</groupId>
 			<artifactId>junit</artifactId>
 			<version>${junit.version}</version>
@@ -166,7 +166,7 @@
 		<dependency>
 		    <groupId>com.gitlab.dedale</groupId>
 	    	<artifactId>dedale</artifactId>
-	    	<version>-SNAPSHOT</version>
+	    	<version>master-SNAPSHOT</version>
 		</dependency>
 
 		<dependency>

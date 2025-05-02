@@ -11,6 +11,8 @@ import eu.su.mas.dedaleEtu.mas.knowledge.MapRepresentation.MapAttribute;
 
 import jade.core.AID;
 import jade.core.Agent;
+import jade.core.behaviours.OneShotBehaviour;
+import jade.core.behaviours.SimpleBehaviour;
 import jade.core.behaviours.TickerBehaviour;
 import jade.lang.acl.ACLMessage;
 
@@ -37,19 +39,24 @@ public class ShareMapBehaviour extends TickerBehaviour{
 	 * @param mymap (the map to share)
 	 * @param receivers the list of agents to send the map to
 	 */
-	public ShareMapBehaviour(Agent a, long period,MapRepresentation mymap, List<String> receivers) {
-		super(a, period);
+	public ShareMapBehaviour(Agent a,long period,MapRepresentation mymap, List<String> receivers) {
+		super(a,period);
 		this.myMap=mymap;
 		this.receivers=receivers;	
 	}
+
 
 	/**
 	 * 
 	 */
 	private static final long serialVersionUID = -568863390879327961L;
 
+
 	@Override
-	protected void onTick() {
+	public void onTick() {
+		if(this.myMap==null) {
+			this.myMap= new MapRepresentation();
+		}
 		//4) At each time step, the agent blindly send all its graph to its surrounding to illustrate how to share its knowledge (the topology currently) with the the others agents. 	
 		// If it was written properly, this sharing action should be in a dedicated behaviour set, the receivers be automatically computed, and only a subgraph would be shared.
 		
@@ -59,7 +66,6 @@ public class ShareMapBehaviour extends TickerBehaviour{
 		for (String agentName : receivers) {
 			msg.addReceiver(new AID(agentName,AID.ISLOCALNAME));
 		}
-			
 		SerializableSimpleGraph<String, MapAttribute> sg=this.myMap.getSerializableGraph();
 		try {					
 			msg.setContentObject(sg);
@@ -67,7 +73,6 @@ public class ShareMapBehaviour extends TickerBehaviour{
 			e.printStackTrace();
 		}
 		((AbstractDedaleAgent)this.myAgent).sendMessage(msg);
-
 		
 	}
 

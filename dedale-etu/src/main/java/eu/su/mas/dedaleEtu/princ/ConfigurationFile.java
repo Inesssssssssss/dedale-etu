@@ -96,6 +96,7 @@ public final class ConfigurationFile {
 	//public static String INSTANCE_CONFIGURATION_ELEMENTS="resources/distributedExploration/emptyMap";
 	
 	// otherwise
+	//public static String INSTANCE_CONFIGURATION_ELEMENTS=null;
 	//public static String INSTANCE_CONFIGURATION_ELEMENTS="resources/treasureHunt/map2019-elementsExam1";
 	//public static String INSTANCE_CONFIGURATION_ELEMENTS="resources/treasureHunt/Houat-elements";
 	public static String INSTANCE_CONFIGURATION_ELEMENTS="resources/treasureHunt/map2018-elements.json";
@@ -130,15 +131,15 @@ public final class ConfigurationFile {
 	/**
 	 * 	Agents communication radius
 	 */
-	public static Integer DEFAULT_COMMUNICATION_REACH=3;
+	public static Integer DEFAULT_COMMUNICATION_REACH=1;
 
 	/**
 	 * Elements on the map
 	 */
 	
 	public static boolean ACTIVE_WELL=false;
-	public static boolean ACTIVE_GOLD=false;
-	public static boolean ACTIVE_DIAMOND=false;
+	public static boolean ACTIVE_GOLD=true;
+	public static boolean ACTIVE_DIAMOND=true;
 
 	/************************************
 	 ************************************
