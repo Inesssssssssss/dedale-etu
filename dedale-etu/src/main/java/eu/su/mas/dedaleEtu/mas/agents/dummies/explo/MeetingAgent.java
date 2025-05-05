@@ -7,6 +7,7 @@ import eu.su.mas.dedale.mas.AbstractDedaleAgent;
 import eu.su.mas.dedale.mas.agent.behaviours.platformManagment.*;
 
 import eu.su.mas.dedaleEtu.mas.behaviours.ExploCoopBehaviour;
+import eu.su.mas.dedaleEtu.mas.behaviours.MainBehaviour;
 import eu.su.mas.dedaleEtu.mas.behaviours.MeetingBehaviour;
 import eu.su.mas.dedaleEtu.mas.behaviours.MeetingExploreBehaviour;
 import eu.su.mas.dedaleEtu.mas.knowledge.MapRepresentation;
@@ -46,7 +47,6 @@ public class MeetingAgent extends AbstractDedaleAgent {
 	 * Consider that Agent is launched for the first time. 
 	 * 			1) set the agent attributes 
 	 *	 		2) add the behaviours
-	 *          
 	 */
 	protected void setup(){
 
@@ -76,7 +76,8 @@ public class MeetingAgent extends AbstractDedaleAgent {
 		 * 
 		 ************************************************/
 		
-		lb.add(new MeetingExploreBehaviour(this,this.myMap,list_agentNames));
+		//lb.add(new MeetingExploreBehaviour(this,this.myMap,list_agentNames));
+		lb.add(new MainBehaviour(this,this.myMap,list_agentNames));
 
 		
 		

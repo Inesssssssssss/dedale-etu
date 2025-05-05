@@ -6,6 +6,7 @@ import java.util.Random;
 
 import dataStructures.serializableGraph.SerializableSimpleGraph;
 import dataStructures.tuple.Couple;
+import eu.su.mas.dedale.env.EntityType;
 import eu.su.mas.dedale.env.Location;
 import eu.su.mas.dedale.env.Observation;
 import eu.su.mas.dedale.env.gs.GsLocation;
@@ -99,7 +100,9 @@ public class CollectBehaviour extends SimpleBehaviour{
 							this.b=true;
 							break;
 						}
+					
 					case AGENTNAME:
+					//EntityType.AGENT_TANKER:
 						if (relative_pos != i) {
 							relative_pos = i;
 							//System.out.println("b : "+this.b);

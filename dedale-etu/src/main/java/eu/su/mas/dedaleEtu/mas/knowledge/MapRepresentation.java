@@ -174,6 +174,23 @@ public class MapRepresentation implements Serializable {
 		return getShortestPath(myPosition,closest.get().getLeft());
 	}
 	
+	// tresor le plus proche
+	public List<String> getShortestPathToClosestTreasure(String myPosition,List<String> treasure) {
+		//1) Get all openNodes
+		List<String> opennodes=treasure;
+
+		//2) select the closest one
+		List<Couple<String,Integer>> lc=
+				opennodes.stream()
+				.map(on -> (getShortestPath(myPosition,on)!=null)? new Couple<String, Integer>(on,getShortestPath(myPosition,on).size()): new Couple<String, Integer>(on,Integer.MAX_VALUE))//some nodes my be unreachable if the agents do not share at least one common node.
+				.collect(Collectors.toList());
+
+		Optional<Couple<String,Integer>> closest=lc.stream().min(Comparator.comparing(Couple::getRight));
+		//3) Compute shorterPath
+
+		return getShortestPath(myPosition,closest.get().getLeft());
+	}
+	
 	public List<String> getShortestPathToSecClosestOpenNode(String myPosition,int i) {
 		//1) Get all openNodes
 		List<String> opennodes=getOpenNodes();

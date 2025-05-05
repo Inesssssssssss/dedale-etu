@@ -82,7 +82,9 @@ public class MeetingExploreBehaviour extends SimpleBehaviour{
 			this.myAgent.addBehaviour(MSB);
 			
 		}
-
+		if (this.myAgent==null) {
+			return;
+		}
 		//0) Retrieve the current position
 		Location myPosition=((AbstractDedaleAgent)this.myAgent).getCurrentPosition();
 
@@ -95,7 +97,7 @@ public class MeetingExploreBehaviour extends SimpleBehaviour{
 			 * Just added here to let you see what the agent is doing, otherwise he will be too quick
 			 */
 			try {
-				this.myAgent.doWait(100);
+				this.myAgent.doWait(50);
 			} catch (Exception e) {
 				e.printStackTrace();
 			}
@@ -137,6 +139,7 @@ public class MeetingExploreBehaviour extends SimpleBehaviour{
 				//Explo finished
 				finished = true;
 				System.out.println(this.myAgent.getLocalName()+" - Exploration successufully done, behaviour removed.");
+				return;
 			}else{
 				//4) select next move.
 				//4.1 If there exist one open node directly reachable, go for it,
@@ -145,7 +148,7 @@ public class MeetingExploreBehaviour extends SimpleBehaviour{
 					//no directly accessible openNode
 					//chose one, compute the path and take the first step.
 					List<String> path=this.myMap.getShortestPathToClosestOpenNode(myPosition.getLocationId());//getShortestPath(myPosition,this.openNodes.get(0)).get(0);
-					//System.out.println("chemin : "+this.myMap.getShortestPathToClosestOpenNode(myPosition.getLocationId()));
+					System.out.println("chemin : "+this.myMap.getShortestPathToClosestOpenNode(myPosition.getLocationId()));
 					
 					if (path == null || path.isEmpty()) {
 	                    System.out.println("Aucun chemin trouvé vers un nœud ouvert");
@@ -153,9 +156,10 @@ public class MeetingExploreBehaviour extends SimpleBehaviour{
 	                }
 					
 					nextNodeId = path.get(0);
+					/*
 					if (pre_node == myPosition.getLocationId() && !finished) {
 						blockedNodes.add(nextNodeId);
-					}
+					}*/
 					for (String block : blockedNodes) {
 						if (path.contains(block)) {
 						//if (pre_node == myPosition.getLocationId()) {
@@ -229,7 +233,7 @@ public class MeetingExploreBehaviour extends SimpleBehaviour{
 					
 					//System.out.println("J'attend la map");
 					ACLMessage msgReceivedTre=this.myAgent.blockingReceive(msgTre,200);
-					if (msgReceivedG != null) {
+					if (msgReceivedTre != null) {
 						List<Couple<String,Couple<Observation,String>>> treasure_received=null;
 						try {
 							treasure_received = (List<Couple<String,Couple<Observation,String>>>)msgReceivedTre.getContentObject();
@@ -263,7 +267,7 @@ public class MeetingExploreBehaviour extends SimpleBehaviour{
 							e.printStackTrace();
 						}
 			        	this.pos_tanker = pos_tank.getConversationId();
-			        	
+			        	blockedNodes.add(this.pos_tanker);
 			        }
 				
 			
@@ -278,7 +282,18 @@ public class MeetingExploreBehaviour extends SimpleBehaviour{
 
 		}
 	}
+	
+	public List<Couple<String,Couple<Observation,String>>> get_treasure(){
+		return this.list_tre;
+	}
+	
+	public String get_tanker() {
+		return this.pos_tanker;
+	}
 
+	public MapRepresentation get_map() {
+		return this.myMap;
+	}
 	@Override
 	public boolean done() {
 		if (finished) {

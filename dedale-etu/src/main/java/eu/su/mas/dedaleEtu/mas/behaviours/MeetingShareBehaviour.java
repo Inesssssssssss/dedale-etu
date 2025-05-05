@@ -61,7 +61,9 @@ public class MeetingShareBehaviour extends SimpleBehaviour{
 					MessageTemplate.MatchPerformative(ACLMessage.INFORM));
 			ACLMessage msgReceived=this.myAgent.receive(msgTemplate);
 			if (msgReceived!=null) {
+				
 				String agentName = msgReceived.getSender().getLocalName();
+				System.out.println(this.myAgent.getLocalName()+" recu ping de "+agentName);
 				ACLMessage msg = new ACLMessage(ACLMessage.INFORM);
 				msg.setProtocol("SHARE-TOPO");
 				msg.setSender(this.myAgent.getAID());
@@ -93,7 +95,7 @@ public class MeetingShareBehaviour extends SimpleBehaviour{
 					e.printStackTrace();
 				}
 				((AbstractDedaleAgent)this.myAgent).sendMessage(msg_tre);
-				System.out.println("tresor envoye");
+				//System.out.println("tresor envoye");
 				}
 			}
 	}

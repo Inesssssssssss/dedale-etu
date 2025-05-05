@@ -1,6 +1,8 @@
 package eu.su.mas.dedaleEtu.mas.behaviours;
 
 import java.io.IOException;
+import java.util.ArrayList;
+import java.util.List;
 
 import dataStructures.serializableGraph.SerializableSimpleGraph;
 import eu.su.mas.dedale.mas.AbstractDedaleAgent;
@@ -17,6 +19,7 @@ public class SendPosTankerBehaviour extends SimpleBehaviour {
 	
 	private boolean finished = false;
 	private MapRepresentation myMap;
+	private List<String> list_agent = new ArrayList<>();
 	
 	public SendPosTankerBehaviour(Agent agent, MapRepresentation myMap) {
 		super(agent);
@@ -33,20 +36,24 @@ public class SendPosTankerBehaviour extends SimpleBehaviour {
 
         ACLMessage ping = this.myAgent.receive(pingTemplate);
         if (ping != null) {
-        	System.out.println("envoi de la position à "+ping.getSender().getName());
-        	ACLMessage share = new ACLMessage(ACLMessage.INFORM);
-            share.setProtocol("TANKER-POS");
-            share.addReceiver(new AID(ping.getSender().getLocalName(), AID.ISLOCALNAME));
-            //share.setContent(((AbstractDedaleAgent) this.myAgent).getCurrentPosition().getLocationId());
-            SerializableSimpleGraph<String, MapAttribute> sg=this.myMap.getSerializableGraph();
-            try {
-				share.setContentObject(sg);
-				share.setConversationId(((AbstractDedaleAgent) this.myAgent).getCurrentPosition().getLocationId());
-			} catch (IOException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
-			}         
-            myAgent.send(share);
+        	String agentName = ping.getSender().getLocalName();
+        	if (!list_agent.contains(agentName)) {
+	        	System.out.println("envoi de la position à "+agentName);
+	        	ACLMessage share = new ACLMessage(ACLMessage.INFORM);
+	            share.setProtocol("TANKER-POS");
+	            share.addReceiver(new AID(agentName, AID.ISLOCALNAME));
+	            //share.setContent(((AbstractDedaleAgent) this.myAgent).getCurrentPosition().getLocationId());
+	            SerializableSimpleGraph<String, MapAttribute> sg=this.myMap.getSerializableGraph();
+	            try {
+					share.setContentObject(sg);
+					share.setConversationId(((AbstractDedaleAgent) this.myAgent).getCurrentPosition().getLocationId());
+				} catch (IOException e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				}         
+	            myAgent.send(share);
+	            list_agent.add(agentName);
+        	}
         }
 		
 	}
