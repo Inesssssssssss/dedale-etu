@@ -144,6 +144,9 @@ public class MapRepresentation implements Serializable {
 		dijkstra.init(g);
 		dijkstra.setSource(g.getNode(idFrom));
 		dijkstra.compute();//compute the distance to all nodes from idFrom
+		//System.out.println("idFrom = " + idFrom + ", idTo = " + idTo);
+		//System.out.println("source node = " + g.getNode(idFrom));
+		//System.out.println("target node = " + g.getNode(idTo));
 		List<Node> path=dijkstra.getPath(g.getNode(idTo)).getNodePath(); //the shortest path from idFrom to idTo
 		Iterator<Node> iter=path.iterator();
 		while (iter.hasNext()){
@@ -184,8 +187,11 @@ public class MapRepresentation implements Serializable {
 				opennodes.stream()
 				.map(on -> (getShortestPath(myPosition,on)!=null)? new Couple<String, Integer>(on,getShortestPath(myPosition,on).size()): new Couple<String, Integer>(on,Integer.MAX_VALUE))//some nodes my be unreachable if the agents do not share at least one common node.
 				.collect(Collectors.toList());
+		
+		System.out.println("liste? : "+lc);
 
 		Optional<Couple<String,Integer>> closest=lc.stream().min(Comparator.comparing(Couple::getRight));
+		System.out.println("closest one : "+closest);
 		//3) Compute shorterPath
 
 		return getShortestPath(myPosition,closest.get().getLeft());
@@ -371,18 +377,51 @@ public class MapRepresentation implements Serializable {
 		
 	}
 	
-	public List<String> getAlternativePath(String myPosition, String blockedNode) {
+	public List<String> getAlternativePath(String myPosition, String blockedNode){
 	    Node blocked = this.g.getNode(blockedNode);
 	    if (blocked == null) return null; // Vérification si le nœud bloqué existe
 
 	    // Suppression temporaire du nœud bloqué du graphe
 	    Set<Edge> edgesToRestore = blocked.edges().collect(Collectors.toSet());
+	    //MapRepresentation copy = (MapRepresentation) this.clone();
+	    //copy.g.removeNode(blockedNode);
+	    Node n = this.g.getNode(blockedNode);
+	    Object o = n.getAttribute("ui.class");
 	    this.g.removeNode(blockedNode);
+	    
 
-	    List<String> alternativePath = getShortestPathToClosestOpenNode(myPosition);
+	    List<String> alternativePath = this.getShortestPathToClosestOpenNode(myPosition);
+	    
 
 	    // Restauration du nœud bloqué et de ses arêtes
-	    this.g.addNode(blockedNode).setAttribute("ui.class", MapAttribute.open.toString());
+	    System.out.println("attribut du noeud "+o.toString());
+	    this.g.addNode(blockedNode).setAttribute("ui.class", o.toString());
+	    for (Edge e : edgesToRestore) {
+	        this.g.addEdge(e.getId(), e.getNode0().getId(), e.getNode1().getId());
+	    }
+
+	    return alternativePath;
+	}
+	
+	public List<String> getAlternativePathTreasure(String myPosition, String blockedNode, List<String> list_tre){
+	    Node blocked = this.g.getNode(blockedNode);
+	    if (blocked == null) return null; // Vérification si le nœud bloqué existe
+
+	    // Suppression temporaire du nœud bloqué du graphe
+	    Set<Edge> edgesToRestore = blocked.edges().collect(Collectors.toSet());
+	    //MapRepresentation copy = (MapRepresentation) this.clone();
+	    //copy.g.removeNode(blockedNode);
+	    Node n = this.g.getNode(blockedNode);
+	    Object o = n.getAttribute("ui.class");
+	    this.g.removeNode(blockedNode);
+	    
+
+	    List<String> alternativePath = this.getShortestPathToClosestTreasure(myPosition, list_tre);
+	    
+
+	    // Restauration du nœud bloqué et de ses arêtes
+	    System.out.println("attribut du noeud "+o.toString());
+	    this.g.addNode(blockedNode).setAttribute("ui.class", o.toString());
 	    for (Edge e : edgesToRestore) {
 	        this.g.addEdge(e.getId(), e.getNode0().getId(), e.getNode1().getId());
 	    }

@@ -30,9 +30,6 @@ public class CollectBehaviour extends SimpleBehaviour{
 	/**
 	 * Current knowledge of the agent regarding the environment
 	 */
-	private MapRepresentation myMap;
-	private MeetingShareBehaviour MSB;
-	private MapRepresentation sharedMap;
 	
 	private List<String> list_agentNames;
 
@@ -43,10 +40,8 @@ public class CollectBehaviour extends SimpleBehaviour{
  * @param myMap known map of the world the agent is living in
  * @param agentNames name of the agents to share the map with
  */
-	public CollectBehaviour(final Agent myagent, MapRepresentation myMap, List<String> agentNames) {
+	public CollectBehaviour(final Agent myagent, List<String> agentNames) {
 		super(myagent);
-		this.myMap=myMap;
-		this.sharedMap=null;
 		this.list_agentNames=agentNames;
 		
 		
@@ -59,7 +54,7 @@ public class CollectBehaviour extends SimpleBehaviour{
 
 		if (myPosition!=null && myPosition.getLocationId()!=""){
 			List<Couple<Location,List<Couple<Observation,String>>>> lobs=((AbstractDedaleAgent)this.myAgent).observe();//myPosition
-			//System.out.println(this.myAgent.getLocalName()+" -- list of observables: "+lobs);
+			System.out.println(this.myAgent.getLocalName()+" -- list of observables: "+lobs);
 
 			//Little pause to allow you to follow what is going on
 //			try {

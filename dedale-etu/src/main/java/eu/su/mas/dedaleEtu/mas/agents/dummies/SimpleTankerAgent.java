@@ -159,8 +159,14 @@ class RandomTankerBehaviour extends SimpleBehaviour{
 		//on ajoute le noeud courant pour le donner aux autre agents
 		if(this.myMap==null) {
 			this.myMap= new MapRepresentation();
+			
+			Location myPosition=((AbstractDedaleAgent)this.myAgent).getCurrentPosition();
+
+			this.myMap.addNode(myPosition.getLocationId(), MapAttribute.closed);
 			this.SPT = new SendPosTankerBehaviour(this.myAgent, this.myMap);
 			this.myAgent.addBehaviour(SPT);
+			
+			
 		}
 		//this.MSB = new MeetingShareBehaviour(this.myAgent,this.myMap, this.list_agentNames);
 		

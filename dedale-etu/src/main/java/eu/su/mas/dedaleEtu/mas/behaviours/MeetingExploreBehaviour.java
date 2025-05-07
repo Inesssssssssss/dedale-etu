@@ -72,12 +72,13 @@ public class MeetingExploreBehaviour extends SimpleBehaviour{
 		//this.sharedMap = new MapRepresentation();
 		//sharedMap ne fonctionne pas -> ouvre une nouvelle map qui n'a pas de liens entre les noeuds
 		if(this.myMap==null) {
+			System.out.println("init map");
 			this.myMap= new MapRepresentation();
 			this.sharedMap = new MapRepresentation();
 			this.MSB = new MeetingShareBehaviour(this.myAgent,this.sharedMap, this.list_agentNames, this.list_tre);
-			this.CB = new CollectBehaviour(this.myAgent,this.sharedMap, this.list_agentNames);
+			//this.CB = new CollectBehaviour(this.myAgent, this.list_agentNames);
 			//this.SMB = new SendMapBehaviour(this.myAgent,this.sharedMap, this.list_agentNames);
-			this.myAgent.addBehaviour(CB);
+			//this.myAgent.addBehaviour(CB);
 			
 			this.myAgent.addBehaviour(MSB);
 			
@@ -124,7 +125,7 @@ public class MeetingExploreBehaviour extends SimpleBehaviour{
 					}
 				}
 				boolean isNewNode=this.myMap.addNewNode(accessibleNode.getLocationId());
-				boolean isNewNodeShared=this.sharedMap.addNewNode(accessibleNode.getLocationId());
+				//boolean isNewNodeShared=this.sharedMap.addNewNode(accessibleNode.getLocationId());
 				//the node may exist, but not necessarily the edge
 				if (myPosition.getLocationId()!=accessibleNode.getLocationId()) {
 					this.myMap.addEdge(myPosition.getLocationId(), accessibleNode.getLocationId());
@@ -138,6 +139,7 @@ public class MeetingExploreBehaviour extends SimpleBehaviour{
 			if (!this.myMap.hasOpenNode()){
 				//Explo finished
 				finished = true;
+				this.myAgent.removeBehaviour(MSB);
 				System.out.println(this.myAgent.getLocalName()+" - Exploration successufully done, behaviour removed.");
 				return;
 			}else{
@@ -148,11 +150,13 @@ public class MeetingExploreBehaviour extends SimpleBehaviour{
 					//no directly accessible openNode
 					//chose one, compute the path and take the first step.
 					List<String> path=this.myMap.getShortestPathToClosestOpenNode(myPosition.getLocationId());//getShortestPath(myPosition,this.openNodes.get(0)).get(0);
-					System.out.println("chemin : "+this.myMap.getShortestPathToClosestOpenNode(myPosition.getLocationId()));
+					System.out.println("chemin : "+this.myMap.getShortestPathToClosestOpenNode(myPosition.getLocationId())+" openNode : "+this.myMap.getOpenNodes());
 					
 					if (path == null || path.isEmpty()) {
 	                    System.out.println("Aucun chemin trouvé vers un nœud ouvert");
 	                    finished = true;
+	                    this.myAgent.removeBehaviour(MSB);
+	                    return;
 	                }
 					
 					nextNodeId = path.get(0);
@@ -164,16 +168,18 @@ public class MeetingExploreBehaviour extends SimpleBehaviour{
 						if (path.contains(block)) {
 						//if (pre_node == myPosition.getLocationId()) {
 							//problem_node = nextNodeId;
-							System.out.println(this.myAgent.getName()+" est bloqué");
+							System.out.println(this.myAgent.getName()+" est bloqué, noeud bloqué : "+block);
 						    
-						    List<String> alternativePath = this.myMap.getAlternativePath(myPosition.getLocationId(), block);
+						    List<String> alternativePath=null;
+							alternativePath = this.myMap.getAlternativePath(myPosition.getLocationId(), block);
 						    
 						    if (alternativePath != null && !alternativePath.isEmpty()) {
 						        nextNodeId = alternativePath.get(0);
-						    }else {
+						    }else if (!this.myMap.hasOpenNode()){
 	                            System.out.println("L'agent a fini d'explorer les noeuds accessibles");
 	                            finished = true;
-		                     }
+	                            this.myAgent.removeBehaviour(MSB);
+		                    }
 						    }
 							/*
 							String pre_nextNode = nextNodeId;
@@ -242,7 +248,7 @@ public class MeetingExploreBehaviour extends SimpleBehaviour{
 						}
 						System.out.println("Tresor avant partage : "+this.list_tre);
 						System.out.println("Tresor partagé : "+treasure_received);
-						this.myAgent.doWait(500);
+						//this.myAgent.doWait(500);
 						
 						this.list_tre = Stream.concat(list_tre.stream(),treasure_received.stream()).collect(Collectors.toList());
 						this.list_tre = this.list_tre.stream().distinct().collect(Collectors.toList());
@@ -259,9 +265,13 @@ public class MeetingExploreBehaviour extends SimpleBehaviour{
 					ACLMessage pos_tank = this.myAgent.blockingReceive(posTemplate,50);
 			        if (pos_tank != null) {
 			        	try {
-							System.out.println("map recu : "+pos_tank.getContentObject()+ " pos : "+ pos_tank.getConversationId());
+							
 							SerializableSimpleGraph<String, MapAttribute> sgreceived = (SerializableSimpleGraph<String, MapAttribute>)pos_tank.getContentObject();
+							System.out.println("map recu : "+sgreceived+ " pos : "+ pos_tank.getConversationId());
+							System.out.println("map avnt merge :"+this.myMap.toString());
 							this.myMap.mergeMap(sgreceived);
+							System.out.println("map apres merge :"+this.myMap.toString());
+							//this.sharedMap.mergeMap(sgreceived);
 			        	} catch (UnreadableException e) {
 							// TODO Auto-generated catch block
 							e.printStackTrace();
@@ -297,7 +307,7 @@ public class MeetingExploreBehaviour extends SimpleBehaviour{
 	@Override
 	public boolean done() {
 		if (finished) {
-			System.out.println("liste final"+list_tre);
+			//System.out.println("liste final"+list_tre);
 		}
 		return finished;
 	}
