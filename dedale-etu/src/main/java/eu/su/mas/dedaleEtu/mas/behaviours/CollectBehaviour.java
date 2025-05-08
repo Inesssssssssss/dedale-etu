@@ -26,6 +26,7 @@ public class CollectBehaviour extends SimpleBehaviour{
 
 	private boolean finished = false;
 	private boolean b = false;
+	private String tankerName= null;
 
 	/**
 	 * Current knowledge of the agent regarding the environment
@@ -104,12 +105,16 @@ public class CollectBehaviour extends SimpleBehaviour{
 							if (this.b) {
 								String agentName = o.getRight();
 								//System.out.println(agentName);
-								if (myAgent.getAID(agentName).getName().equals("Tim@Ithaq")) {
+								
+								//if (myAgent.getAID(agentName).getName().equals("Tim@Ithaq")) {
+								if (this.tankerName!=null) {
+								if (myAgent.getAID(agentName).getLocalName().equals(this.tankerName)) {
 									//System.out.println("Je vide mon sac");
 									//((AbstractDedaleAgent)myAgent).emptyMyBackPack(agentName);
 									System.out.println(this.myAgent.getLocalName()+" - The agent tries to transfer is load into the Silo (if reachable); succes ? : "+((AbstractDedaleAgent)this.myAgent).emptyMyBackPack(agentName));
 									//System.out.println("Je vide mon sac");
 									//((AbstractDedaleAgent)myAgent).emptyMyBackPack("Elsa");
+								}
 								}
 								this.b = false;
 							}
@@ -145,6 +150,9 @@ public class CollectBehaviour extends SimpleBehaviour{
 			//((AbstractDedaleAgent)this.myAgent).moveTo(lobs.get(moveId).getLeft());
 		}
 
+	}
+	public void setTankerName(String tankName) {
+		this.tankerName = tankName;
 	}
 
 	@Override

@@ -35,6 +35,11 @@ public class MainBehaviour extends SimpleBehaviour{
 			
 			this.CNB = new CollectNearBehaviour((AbstractDedaleAgent) this.myAgent,null, this.myMap, null);
 			this.MEB_starter++;
+		}else {
+			String tankerName = this.MEB.getNameTanker();
+			if (tankerName!=null) {
+				this.CB.setTankerName(tankerName);
+			}
 		}
 		if (this.MEB.done()) {
 			
@@ -50,7 +55,9 @@ public class MainBehaviour extends SimpleBehaviour{
 				
 				
 				this.myAgent.addBehaviour(CNB);
-			}
+		}
+			
+			
 			
 			
 		}if(this.CNB.done()) {

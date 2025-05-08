@@ -43,6 +43,7 @@ public class MeetingExploreBehaviour extends SimpleBehaviour{
 	private String pre_node;
 	private String problem_node=null;
 	private String pos_tanker=null;
+	private String name_tanker = null;
 	private List<Couple<String,Couple<Observation,String>>> list_tre = new ArrayList<>();   //liste ou se trouve les tresors
 	
 	private List<String> list_agentNames;
@@ -277,6 +278,7 @@ public class MeetingExploreBehaviour extends SimpleBehaviour{
 							e.printStackTrace();
 						}
 			        	this.pos_tanker = pos_tank.getConversationId();
+			        	this.name_tanker = pos_tank.getSender().getLocalName();
 			        	blockedNodes.add(this.pos_tanker);
 			        }
 				
@@ -303,6 +305,10 @@ public class MeetingExploreBehaviour extends SimpleBehaviour{
 
 	public MapRepresentation get_map() {
 		return this.myMap;
+	}
+	
+	public String getNameTanker() {
+		return this.name_tanker;
 	}
 	@Override
 	public boolean done() {
