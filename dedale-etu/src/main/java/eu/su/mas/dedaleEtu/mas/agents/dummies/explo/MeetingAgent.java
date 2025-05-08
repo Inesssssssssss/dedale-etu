@@ -63,6 +63,7 @@ public class MeetingAgent extends AbstractDedaleAgent {
 		}else{
 			int i=2;// WARNING YOU SHOULD ALWAYS START AT 2. This will be corrected in the next release.
 			while (i<args.length) {
+				System.out.println("ajout agent : "+(String)args[i]);
 				list_agentNames.add((String)args[i]);
 				i++;
 			}

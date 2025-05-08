@@ -27,13 +27,17 @@ public class MeetingShareBehaviour extends SimpleBehaviour{
 	private List<String> agentNames;
 	private List<String> agentSentTo;
 	private List<Couple<String,Couple<Observation,String>>> list_tre;
+	private String tankerPos;
+	private String tankerName;
 	
-	public MeetingShareBehaviour (final Agent myagent, MapRepresentation myMap, List<String> agentNames,List<Couple<String,Couple<Observation,String>>> list_tre) {
+	public MeetingShareBehaviour (final Agent myagent, MapRepresentation myMap, List<String> agentNames,List<Couple<String,Couple<Observation,String>>> list_tre, String tankerPos, String tankerName) {
 		super(myagent);
 		this.myMap=myMap;
 		this.agentNames = agentNames;
 		this.agentSentTo = new ArrayList<String>();
 		this.list_tre = list_tre;
+		this.tankerPos = tankerPos;
+		this.tankerName = tankerName;
 		}
 
 	@Override
@@ -63,7 +67,7 @@ public class MeetingShareBehaviour extends SimpleBehaviour{
 			if (msgReceived!=null) {
 				
 				String agentName = msgReceived.getSender().getLocalName();
-				System.out.println(this.myAgent.getLocalName()+" recu ping de "+agentName);
+				//System.out.println(this.myAgent.getLocalName()+" recu ping de "+agentName);
 				ACLMessage msg = new ACLMessage(ACLMessage.INFORM);
 				msg.setProtocol("SHARE-TOPO");
 				msg.setSender(this.myAgent.getAID());
@@ -88,8 +92,14 @@ public class MeetingShareBehaviour extends SimpleBehaviour{
 				msg_tre.setSender(this.myAgent.getAID());
 				msg_tre.addReceiver(new AID(agentName,AID.ISLOCALNAME));
 				
+				ArrayList<Object> msgList = new ArrayList<>();
+				msgList.add(this.list_tre);
+				msgList.add(this.tankerPos);
+				msgList.add(this.tankerName);
+				
 				try {
-					msg_tre.setContentObject((Serializable) this.list_tre);
+					//msg_tre.setContentObject((Serializable) this.list_tre);
+					msg_tre.setContentObject(msgList);
 				} catch (IOException e) {
 					// TODO Auto-generated catch block
 					e.printStackTrace();
@@ -98,6 +108,14 @@ public class MeetingShareBehaviour extends SimpleBehaviour{
 				//System.out.println("tresor envoye");
 				}
 			}
+	}
+	
+	public void setTankerPos(String tanker_pos) {
+		this.tankerPos=tanker_pos;
+	}
+	
+	public void setTankerName(String tanker_name) {
+		this.tankerName=tanker_name;
 	}
 
 	@Override

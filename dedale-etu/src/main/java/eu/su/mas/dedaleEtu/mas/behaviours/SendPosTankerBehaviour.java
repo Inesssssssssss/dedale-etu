@@ -33,7 +33,6 @@ public class SendPosTankerBehaviour extends SimpleBehaviour {
                 MessageTemplate.MatchProtocol("PING"),
                 MessageTemplate.MatchPerformative(ACLMessage.INFORM)
         );
-
         ACLMessage ping = this.myAgent.receive(pingTemplate);
         if (ping != null) {
         	String agentName = ping.getSender().getLocalName();

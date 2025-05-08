@@ -38,6 +38,7 @@ public class MainBehaviour extends SimpleBehaviour{
 		}else {
 			String tankerName = this.MEB.getNameTanker();
 			if (tankerName!=null) {
+				System.out.println("Main : tankerName set : "+tankerName+" agent : "+this.myAgent.getLocalName());
 				this.CB.setTankerName(tankerName);
 			}
 		}
@@ -52,6 +53,7 @@ public class MainBehaviour extends SimpleBehaviour{
 				this.CNB.set_list_tre(list_tre);
 				this.CNB.set_pos_tanker(pos_tanker);
 				this.CNB.set_map(map);
+				System.out.println("Main : liste des tresors : "+list_tre);
 				
 				
 				this.myAgent.addBehaviour(CNB);
@@ -64,6 +66,7 @@ public class MainBehaviour extends SimpleBehaviour{
 			this.myAgent.removeBehaviour(CB);
 			this.myAgent.removeBehaviour(CNB);
 			finished=true;
+			this.myAgent.doDelete();
 		}
 	}
 

@@ -47,10 +47,11 @@ public class CollectNearBehaviour extends SimpleBehaviour{
 		
 		//List of observable from the agent's current position
 		List<Couple<Location,List<Couple<Observation,String>>>> lobs=((AbstractDedaleAgent)this.myAgent).observe();//myPosition
+		System.out.println("observation collect : "+lobs);
 		// retirer tresor deja ramassé
 		for (int i = 0; i < list_tre_type.size(); i++) {
-			if (list_tre_type.get(i).getLeft()==lobs.get(0).getLeft().getLocationId()) {
-				if(lobs.get(0).getRight().get(0).getLeft()!=Observation.GOLD ||lobs.get(0).getRight().get(0).getLeft()!=Observation.DIAMOND) {
+			if (list_tre_type.get(i).getLeft().equals(lobs.get(0).getLeft().getLocationId())) {
+				if(lobs.get(0).getRight().get(0).getLeft()!=Observation.GOLD && lobs.get(0).getRight().get(0).getLeft()!=Observation.DIAMOND) {
 					list_tre_type.remove(i);
 				}
 			}
@@ -77,21 +78,6 @@ public class CollectNearBehaviour extends SimpleBehaviour{
 			}
 		}
 		
-		/*
-		while(iter.hasNext()){
-			Couple<Location, List<Couple<Observation, String>>> nodeData = iter.next();
-			for (Couple<Observation, String> o: nodeData.getRight()) {
-				System.out.println("objet : "+o);
-				System.out.println("type de l'agent : "+((AbstractDedaleAgent)myAgent).getMyTreasureType()+" type de l'observation : "+o.getLeft());
-				if (((AbstractDedaleAgent)myAgent).getMyTreasureType()==o.getLeft()) {
-					System.out.println("le tresor est a cote");
-					if (nextNodeId==null) {
-						nextNodeId = nodeData.getLeft().getLocationId();
-					}
-				}
-			}
-			
-		}*/
 		
 		if (this.list_tre_type.size()<=0) {
 			if (!drop) {

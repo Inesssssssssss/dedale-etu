@@ -68,15 +68,16 @@ public class MeetingExploreBehaviour extends SimpleBehaviour{
 		this.list_agentNames=agentNames;
 	}
 
+	@SuppressWarnings("unchecked")
 	@Override
 	public void action() {
 		//this.sharedMap = new MapRepresentation();
 		//sharedMap ne fonctionne pas -> ouvre une nouvelle map qui n'a pas de liens entre les noeuds
 		if(this.myMap==null) {
-			System.out.println("init map");
+			//System.out.println("init map");
 			this.myMap= new MapRepresentation();
 			this.sharedMap = new MapRepresentation();
-			this.MSB = new MeetingShareBehaviour(this.myAgent,this.sharedMap, this.list_agentNames, this.list_tre);
+			this.MSB = new MeetingShareBehaviour(this.myAgent,this.sharedMap, this.list_agentNames, this.list_tre, this.pos_tanker, this.name_tanker);
 			//this.CB = new CollectBehaviour(this.myAgent, this.list_agentNames);
 			//this.SMB = new SendMapBehaviour(this.myAgent,this.sharedMap, this.list_agentNames);
 			//this.myAgent.addBehaviour(CB);
@@ -151,7 +152,7 @@ public class MeetingExploreBehaviour extends SimpleBehaviour{
 					//no directly accessible openNode
 					//chose one, compute the path and take the first step.
 					List<String> path=this.myMap.getShortestPathToClosestOpenNode(myPosition.getLocationId());//getShortestPath(myPosition,this.openNodes.get(0)).get(0);
-					System.out.println("chemin : "+this.myMap.getShortestPathToClosestOpenNode(myPosition.getLocationId())+" openNode : "+this.myMap.getOpenNodes());
+					//System.out.println("chemin : "+this.myMap.getShortestPathToClosestOpenNode(myPosition.getLocationId())+" openNode : "+this.myMap.getOpenNodes());
 					
 					if (path == null || path.isEmpty()) {
 	                    System.out.println("Aucun chemin trouvé vers un nœud ouvert");
@@ -241,19 +242,34 @@ public class MeetingExploreBehaviour extends SimpleBehaviour{
 					//System.out.println("J'attend la map");
 					ACLMessage msgReceivedTre=this.myAgent.blockingReceive(msgTre,200);
 					if (msgReceivedTre != null) {
+						ArrayList<Object> msgObj = null;
 						List<Couple<String,Couple<Observation,String>>> treasure_received=null;
 						try {
-							treasure_received = (List<Couple<String,Couple<Observation,String>>>)msgReceivedTre.getContentObject();
+							msgObj = (ArrayList<Object>)msgReceivedTre.getContentObject();
+							//treasure_received = (List<Couple<String,Couple<Observation,String>>>)msgReceivedTre.getContentObject();
 						} catch (UnreadableException e) {
 							e.printStackTrace();
 						}
+						
+						//this.myAgent.doWait(500);
+						treasure_received = (List<Couple<String, Couple<Observation, String>>>) msgObj.get(0);
+						String pos_tank_received = (String) msgObj.get(1);
+						String name_tank_received = (String) msgObj.get(2);
+						
 						System.out.println("Tresor avant partage : "+this.list_tre);
 						System.out.println("Tresor partagé : "+treasure_received);
-						//this.myAgent.doWait(500);
 						
 						this.list_tre = Stream.concat(list_tre.stream(),treasure_received.stream()).collect(Collectors.toList());
 						this.list_tre = this.list_tre.stream().distinct().collect(Collectors.toList());
 						System.out.println("Tresor apres partage : "+this.list_tre);
+		
+						if (pos_tank_received!=null) {
+							this.pos_tanker=pos_tank_received;
+							this.name_tanker=name_tank_received;
+							if(!this.blockedNodes.contains(pos_tank_received)) {
+								this.blockedNodes.add(pos_tank_received);
+							}
+						}
 					
 					}
 					
@@ -279,6 +295,9 @@ public class MeetingExploreBehaviour extends SimpleBehaviour{
 						}
 			        	this.pos_tanker = pos_tank.getConversationId();
 			        	this.name_tanker = pos_tank.getSender().getLocalName();
+			        	
+			        	this.MSB.setTankerPos(this.pos_tanker);
+			        	this.MSB.setTankerName(this.name_tanker);
 			        	blockedNodes.add(this.pos_tanker);
 			        }
 				

@@ -55,7 +55,7 @@ public class CollectBehaviour extends SimpleBehaviour{
 
 		if (myPosition!=null && myPosition.getLocationId()!=""){
 			List<Couple<Location,List<Couple<Observation,String>>>> lobs=((AbstractDedaleAgent)this.myAgent).observe();//myPosition
-			System.out.println(this.myAgent.getLocalName()+" -- list of observables: "+lobs);
+			//System.out.println(this.myAgent.getLocalName()+" -- list of observables: "+lobs);
 
 			//Little pause to allow you to follow what is going on
 //			try {
