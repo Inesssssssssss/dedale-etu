@@ -51,6 +51,9 @@ public class MeetingExploreBehaviour extends SimpleBehaviour{
 	// Ajout d'une file pour stocker les 3 derniers déplacements
 	private Queue<String> lastPositions = new LinkedList<>();
 	private Set<String> blockedNodes = new HashSet<>(); // Liste des nœuds à éviter temporairement
+	
+	private Integer cptBlock = 0;
+	private Integer cptRedo = 0;
 
 	
 
@@ -88,6 +91,16 @@ public class MeetingExploreBehaviour extends SimpleBehaviour{
 		if (this.myAgent==null) {
 			return;
 		}
+		
+		if (this.cptRedo>15) {
+			this.blockedNodes = new HashSet<>();
+			if(this.pos_tanker!=null) {
+				//System.out.println(this.myAgent.getLocalName()+" - before blockedNodes : "+this.blockedNodes);
+				this.blockedNodes.add(this.pos_tanker);
+				//System.out.println(this.myAgent.getLocalName()+" - after blockedNodes : "+this.blockedNodes);
+			}
+			this.cptRedo = 0;
+		}
 		//0) Retrieve the current position
 		Location myPosition=((AbstractDedaleAgent)this.myAgent).getCurrentPosition();
 
@@ -100,7 +113,7 @@ public class MeetingExploreBehaviour extends SimpleBehaviour{
 			 * Just added here to let you see what the agent is doing, otherwise he will be too quick
 			 */
 			try {
-				this.myAgent.doWait(50);
+				this.myAgent.doWait(400);
 			} catch (Exception e) {
 				e.printStackTrace();
 			}
@@ -124,10 +137,11 @@ public class MeetingExploreBehaviour extends SimpleBehaviour{
 					Couple<Observation,String> treasure = lObservations.get(0);
 					if ((treasure.getLeft() == Observation.DIAMOND || treasure.getLeft() == Observation.GOLD) && !list_tre.contains(new Couple<>(posTre, treasure))){
 						list_tre.add(new Couple<>(posTre, treasure));
+						this.MSB.setListTre(this.list_tre);
 					}
 				}
 				boolean isNewNode=this.myMap.addNewNode(accessibleNode.getLocationId());
-				//boolean isNewNodeShared=this.sharedMap.addNewNode(accessibleNode.getLocationId());
+				boolean isNewNodeShared=this.sharedMap.addNewNode(accessibleNode.getLocationId());
 				//the node may exist, but not necessarily the edge
 				if (myPosition.getLocationId()!=accessibleNode.getLocationId()) {
 					this.myMap.addEdge(myPosition.getLocationId(), accessibleNode.getLocationId());
@@ -152,7 +166,7 @@ public class MeetingExploreBehaviour extends SimpleBehaviour{
 					//no directly accessible openNode
 					//chose one, compute the path and take the first step.
 					List<String> path=this.myMap.getShortestPathToClosestOpenNode(myPosition.getLocationId());//getShortestPath(myPosition,this.openNodes.get(0)).get(0);
-					//System.out.println("chemin : "+this.myMap.getShortestPathToClosestOpenNode(myPosition.getLocationId())+" openNode : "+this.myMap.getOpenNodes());
+					//System.out.println(this.myAgent.getLocalName() + " - chemin : "+this.myMap.getShortestPathToClosestOpenNode(myPosition.getLocationId())+" openNode : "+this.myMap.getOpenNodes());
 					
 					if (path == null || path.isEmpty()) {
 	                    System.out.println("Aucun chemin trouvé vers un nœud ouvert");
@@ -170,11 +184,12 @@ public class MeetingExploreBehaviour extends SimpleBehaviour{
 						if (path.contains(block)) {
 						//if (pre_node == myPosition.getLocationId()) {
 							//problem_node = nextNodeId;
-							System.out.println(this.myAgent.getName()+" est bloqué, noeud bloqué : "+block);
+							System.out.println(this.myAgent.getName()+" est bloqué, noeud bloqué : "+block+" path : "+path);
 						    
 						    List<String> alternativePath=null;
 							alternativePath = this.myMap.getAlternativePath(myPosition.getLocationId(), block);
 						    
+							//System.out.println(this.myAgent.getName()+" - new path : "+alternativePath);
 						    if (alternativePath != null && !alternativePath.isEmpty()) {
 						        nextNodeId = alternativePath.get(0);
 						    }else if (!this.myMap.hasOpenNode()){
@@ -256,19 +271,19 @@ public class MeetingExploreBehaviour extends SimpleBehaviour{
 						String pos_tank_received = (String) msgObj.get(1);
 						String name_tank_received = (String) msgObj.get(2);
 						
-						System.out.println("Tresor avant partage : "+this.list_tre);
-						System.out.println("Tresor partagé : "+treasure_received);
+						//System.out.println("Tresor avant partage : "+this.list_tre);
+						//System.out.println("Tresor partagé : "+treasure_received);
 						
 						this.list_tre = Stream.concat(list_tre.stream(),treasure_received.stream()).collect(Collectors.toList());
 						this.list_tre = this.list_tre.stream().distinct().collect(Collectors.toList());
-						System.out.println("Tresor apres partage : "+this.list_tre);
+						//System.out.println("Tresor apres partage : "+this.list_tre);
+						
+						this.MSB.setListTre(this.list_tre);
 		
 						if (pos_tank_received!=null) {
 							this.pos_tanker=pos_tank_received;
 							this.name_tanker=name_tank_received;
-							if(!this.blockedNodes.contains(pos_tank_received)) {
-								this.blockedNodes.add(pos_tank_received);
-							}
+							this.blockedNodes.add(pos_tank_received);
 						}
 					
 					}
@@ -284,10 +299,10 @@ public class MeetingExploreBehaviour extends SimpleBehaviour{
 			        	try {
 							
 							SerializableSimpleGraph<String, MapAttribute> sgreceived = (SerializableSimpleGraph<String, MapAttribute>)pos_tank.getContentObject();
-							System.out.println("map recu : "+sgreceived+ " pos : "+ pos_tank.getConversationId());
-							System.out.println("map avnt merge :"+this.myMap.toString());
+							//System.out.println("map recu : "+sgreceived+ " pos : "+ pos_tank.getConversationId());
+							//System.out.println("map avnt merge :"+this.myMap.toString());
 							this.myMap.mergeMap(sgreceived);
-							System.out.println("map apres merge :"+this.myMap.toString());
+							//System.out.println("map apres merge :"+this.myMap.toString());
 							//this.sharedMap.mergeMap(sgreceived);
 			        	} catch (UnreadableException e) {
 							// TODO Auto-generated catch block
@@ -298,17 +313,30 @@ public class MeetingExploreBehaviour extends SimpleBehaviour{
 			        	
 			        	this.MSB.setTankerPos(this.pos_tanker);
 			        	this.MSB.setTankerName(this.name_tanker);
-			        	blockedNodes.add(this.pos_tanker);
+			        	if (!this.blockedNodes.contains(this.pos_tanker)) {
+			        		blockedNodes.add(this.pos_tanker);
+			        	}
+			        	
 			        }
-				
+			        
+			        if (this.pre_node == nextNodeId) {
+			        	this.cptBlock++;
+			        	if(cptBlock>2) {
+			        		this.blockedNodes.add(nextNodeId);
+			        		this.cptBlock = 0;
+			        	}
+			        }
 			
 					//System.out.println("Prochain noeud : "+ nextNodeId);
 					((AbstractDedaleAgent)this.myAgent).moveTo(new GsLocation(nextNodeId));
 					lastPositions.add(nextNodeId);
 	                if (lastPositions.size() > 3) lastPositions.poll();
+	                
+	                
 
-		
-				pre_node = myPosition.getLocationId();
+	                this.pre_node = nextNodeId;
+	                this.cptRedo++;
+				//pre_node = myPosition.getLocationId();
 			}
 
 		}

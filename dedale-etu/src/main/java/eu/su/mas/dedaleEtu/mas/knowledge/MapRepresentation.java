@@ -188,10 +188,10 @@ public class MapRepresentation implements Serializable {
 				.map(on -> (getShortestPath(myPosition,on)!=null)? new Couple<String, Integer>(on,getShortestPath(myPosition,on).size()): new Couple<String, Integer>(on,Integer.MAX_VALUE))//some nodes my be unreachable if the agents do not share at least one common node.
 				.collect(Collectors.toList());
 		
-		System.out.println("liste? : "+lc);
+		//System.out.println("liste? : "+lc);
 
 		Optional<Couple<String,Integer>> closest=lc.stream().min(Comparator.comparing(Couple::getRight));
-		System.out.println("closest one : "+closest);
+		//System.out.println("closest one : "+closest);
 		//3) Compute shorterPath
 
 		return getShortestPath(myPosition,closest.get().getLeft());
@@ -394,7 +394,7 @@ public class MapRepresentation implements Serializable {
 	    
 
 	    // Restauration du nœud bloqué et de ses arêtes
-	    System.out.println("attribut du noeud "+o.toString());
+	    //System.out.println("attribut du noeud "+o.toString());
 	    this.g.addNode(blockedNode).setAttribute("ui.class", o.toString());
 	    for (Edge e : edgesToRestore) {
 	        this.g.addEdge(e.getId(), e.getNode0().getId(), e.getNode1().getId());
@@ -417,6 +417,32 @@ public class MapRepresentation implements Serializable {
 	    
 
 	    List<String> alternativePath = this.getShortestPathToClosestTreasure(myPosition, list_tre);
+	    
+
+	    // Restauration du nœud bloqué et de ses arêtes
+	    System.out.println("attribut du noeud "+o.toString());
+	    this.g.addNode(blockedNode).setAttribute("ui.class", o.toString());
+	    for (Edge e : edgesToRestore) {
+	        this.g.addEdge(e.getId(), e.getNode0().getId(), e.getNode1().getId());
+	    }
+
+	    return alternativePath;
+	}
+	
+	public List<String> getAlternativeShortPath(String myPosition, String blockedNode, String dst){
+	    Node blocked = this.g.getNode(blockedNode);
+	    if (blocked == null) return null; // Vérification si le nœud bloqué existe
+
+	    // Suppression temporaire du nœud bloqué du graphe
+	    Set<Edge> edgesToRestore = blocked.edges().collect(Collectors.toSet());
+	    //MapRepresentation copy = (MapRepresentation) this.clone();
+	    //copy.g.removeNode(blockedNode);
+	    Node n = this.g.getNode(blockedNode);
+	    Object o = n.getAttribute("ui.class");
+	    this.g.removeNode(blockedNode);
+	    
+
+	    List<String> alternativePath = this.getShortestPath(myPosition,dst);
 	    
 
 	    // Restauration du nœud bloqué et de ses arêtes

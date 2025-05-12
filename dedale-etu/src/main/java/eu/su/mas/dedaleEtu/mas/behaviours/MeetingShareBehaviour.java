@@ -117,6 +117,10 @@ public class MeetingShareBehaviour extends SimpleBehaviour{
 	public void setTankerName(String tanker_name) {
 		this.tankerName=tanker_name;
 	}
+	
+	public void setListTre(List<Couple<String,Couple<Observation,String>>> list_tre) {
+		this.list_tre = list_tre;
+	}
 
 	@Override
 	public boolean done() {

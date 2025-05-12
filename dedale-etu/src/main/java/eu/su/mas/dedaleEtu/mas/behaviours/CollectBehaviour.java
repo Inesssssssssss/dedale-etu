@@ -82,7 +82,7 @@ public class CollectBehaviour extends SimpleBehaviour{
 							System.out.println(this.myAgent.getLocalName()+" - Value of the treasure on the current position: "+o.getLeft() +": "+ o.getRight());
 							System.out.println(this.myAgent.getLocalName()+" - The agent grabbed :"+((AbstractDedaleAgent) this.myAgent).pick());
 							System.out.println(this.myAgent.getLocalName()+" - the remaining backpack capacity is: "+ ((AbstractDedaleAgent) this.myAgent).getBackPackFreeSpace());
-							//this.b=true;
+							this.b=true;
 							break;
 						}
 					case GOLD:
@@ -102,9 +102,9 @@ public class CollectBehaviour extends SimpleBehaviour{
 						if (relative_pos != i) {
 							relative_pos = i;
 							//System.out.println("b : "+this.b);
-							if (this.b) {
+							//if (this.b) {
 								String agentName = o.getRight();
-								//System.out.println(agentName);
+								//System.out.println(this.myAgent.getLocalName()+" - Nom de l'agent observe : "+agentName+" Nom du tanker : "+this.tankerName);
 								
 								//if (myAgent.getAID(agentName).getName().equals("Tim@Ithaq")) {
 								if (this.tankerName!=null) {
@@ -117,7 +117,7 @@ public class CollectBehaviour extends SimpleBehaviour{
 								}
 								}
 								this.b = false;
-							}
+							//}
 							break;
 							
 							

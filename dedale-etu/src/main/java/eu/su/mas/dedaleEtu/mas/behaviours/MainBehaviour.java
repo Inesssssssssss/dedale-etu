@@ -16,6 +16,8 @@ public class MainBehaviour extends SimpleBehaviour{
 	private CollectNearBehaviour CNB;
 	private CollectBehaviour CB;
 	private int MEB_starter = 0;
+	private int EB_starter = 0;
+	private ExplorerBehaviour EB;
 	
 	public MainBehaviour(final AbstractDedaleAgent myagent, MapRepresentation myMap, List<String> agentNames) {
 		super(myagent);
@@ -38,25 +40,36 @@ public class MainBehaviour extends SimpleBehaviour{
 		}else {
 			String tankerName = this.MEB.getNameTanker();
 			if (tankerName!=null) {
-				System.out.println("Main : tankerName set : "+tankerName+" agent : "+this.myAgent.getLocalName());
+				//System.out.println("Main : tankerName set : "+tankerName+" agent : "+this.myAgent.getLocalName());
 				this.CB.setTankerName(tankerName);
 			}
 		}
 		if (this.MEB.done()) {
 			
 			if (this.CNB.get_pos_tanker()==null) {
-				System.out.println("MEB done for "+this.myAgent.getLocalName());
-				List<Couple<String,Couple<Observation,String>>> list_tre = this.MEB.get_treasure();
-				String pos_tanker = this.MEB.get_tanker();
-				MapRepresentation map = this.MEB.get_map();
-				this.myAgent.removeBehaviour(MEB);
-				this.CNB.set_list_tre(list_tre);
-				this.CNB.set_pos_tanker(pos_tanker);
-				this.CNB.set_map(map);
-				System.out.println("Main : liste des tresors : "+list_tre);
-				
-				
-				this.myAgent.addBehaviour(CNB);
+				if(this.myAgent.getLocalName().equals("E1")) {
+					System.out.println("Agent explorer a fini MEB");
+					if(this.EB_starter==0) {
+						this.EB_starter++;
+						this.EB = new ExplorerBehaviour((AbstractDedaleAgent) this.myAgent,this.MEB.get_map(),this.agentNames,this.MEB.get_treasure());
+						this.myAgent.addBehaviour(EB);
+					}
+						
+					
+				}else {
+					System.out.println("MEB done for "+this.myAgent.getLocalName());
+					List<Couple<String,Couple<Observation,String>>> list_tre = this.MEB.get_treasure();
+					String pos_tanker = this.MEB.get_tanker();
+					MapRepresentation map = this.MEB.get_map();
+					this.myAgent.removeBehaviour(MEB);
+					this.CNB.set_list_tre(list_tre);
+					this.CNB.set_pos_tanker(pos_tanker);
+					this.CNB.set_map(map);
+					System.out.println("Main : liste des tresors : "+list_tre);
+					
+					
+					this.myAgent.addBehaviour(CNB);
+				}
 		}
 			
 			
